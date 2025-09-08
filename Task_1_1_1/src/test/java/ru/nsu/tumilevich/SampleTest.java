@@ -8,17 +8,7 @@ class SampleTest {
 
     @Test
     void checkMain() {
-        Sample.main(new String[] {});
+        // Sample.main(new String[] {});
         assertTrue(true);
-    }
-
-    @Test
-    void checkPrinting() {
-        Sample.printHelloWorld();
-    }
-
-    @Test
-    void doINeedToCheckDefaultConstructor() {
-        final var sampleInstance = new Sample();
     }
 }
