@@ -6,6 +6,7 @@ package ru.nsu.tumilevich;
 public class Sort {
     public static Integer[] pyrsort(Integer[] array) {
         array.sort;
+        //hiu
     }
 
 }
