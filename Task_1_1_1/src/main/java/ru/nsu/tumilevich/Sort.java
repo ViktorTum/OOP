@@ -13,6 +13,7 @@ public class Sort {
      * @param array массив для сортировки.
      * @return отсортированный массив.
      */
+    @SuppressWarnings("checkstyle:Indentation")
     public static Integer[] heapsort(Integer[] array) {
         int n = array.length;
 
@@ -38,6 +39,7 @@ public class Sort {
      * @param ln    размер кучи.
      * @return измененный массив.
      */
+    @SuppressWarnings("checkstyle:Indentation")
     public static Integer[] heapify(Integer[] array, int i, int ln) {
         int largest = i;
         int left = 2 * i + 1;  // <-- ИСПРАВЛЕНО: пробелы вокруг '*'
