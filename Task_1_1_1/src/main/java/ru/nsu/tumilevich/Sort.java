@@ -1,13 +1,19 @@
 package ru.nsu.tumilevich;
+
 import java.util.Arrays;
 
 /**
- * Пиромидальная сортировка
+ * Класс для реализации пирамидальной сортировки.
  */
 public class Sort {
+
+    /**
+     * Реализация алгоритма пирамидальной сортировки.
+     *
+     * @param array массив для сортировки.
+     * @return отсортированный массив.
+     */
     public static Integer[] heapsort(Integer[] array) {
-        // Сортировка всего массива
-        //построение макс кучи [5, 2, 8, 1, 3]
         int n = array.length;
 
         for (int i = n / 2; i >= 0; i--) {
@@ -22,12 +28,20 @@ public class Sort {
         }
 
         return array;
-
     }
+
+    /**
+     * Вспомогательный метод для построения кучи.
+     *
+     * @param array массив.
+     * @param i     индекс текущего узла.
+     * @param ln    размер кучи.
+     * @return измененный массив.
+     */
     public static Integer[] heapify(Integer[] array, int i, int ln) {
         int largest = i;
-        int left = 2*i + 1;
-        int right = 2*i + 2;
+        int left = 2 * i + 1;  // <-- ИСПРАВЛЕНО: пробелы вокруг '*'
+        int right = 2 * i + 2; // <-- ИСПРАВЛЕНО: пробелы вокруг '*'
 
         if (left < ln && array[left] > array[largest]) {
             largest = left;
@@ -37,7 +51,7 @@ public class Sort {
             largest = right;
         }
 
-        if  (largest != i) {
+        if (largest != i) {
             int tmp = array[largest];
             array[largest] = array[i];
             array[i] = tmp;
@@ -46,10 +60,13 @@ public class Sort {
         return array;
     }
 
+    /**
+     * Точка входа в программу.
+     *
+     * @param args аргументы командной строки.
+     */
     public static void main(String[] args) {
-        Integer [] partialArray = {0};
+        Integer[] partialArray = {0};
         System.out.println(Arrays.toString(heapsort(partialArray)));
     }
-//{7, 6, 2, 5, 8, 3, 1, 4};
-// {5, 3, 1, 9, 6, 2, 8, 4, 7};
 }
