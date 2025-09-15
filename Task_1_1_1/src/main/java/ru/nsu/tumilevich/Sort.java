@@ -2,7 +2,7 @@ package ru.nsu.tumilevich;
 import java.util.Arrays;
 
 /**
- * Sample class to simulate 1.1 task functionality
+ * Пиромидальная сортировка
  */
 public class Sort {
     public static Integer[] heapsort(Integer[] array) {
