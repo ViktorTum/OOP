@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * Класс для реализации пирамидальной сортировки.
  */
-public class Sort {
+public final class Sort {
 
     /**
      * Реализация алгоритма пирамидальной сортировки.
@@ -40,10 +40,10 @@ public class Sort {
      * @return измененный массив.
      */
     @SuppressWarnings("checkstyle:Indentation")
-    public static Integer[] heapify(Integer[] array, int i, int ln) {
+    private static Integer[] heapify(Integer[] array, int i, int ln) {
         int largest = i;
-        int left = 2 * i + 1;  // <-- ИСПРАВЛЕНО: пробелы вокруг '*'
-        int right = 2 * i + 2; // <-- ИСПРАВЛЕНО: пробелы вокруг '*'
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
 
         if (left < ln && array[left] > array[largest]) {
             largest = left;
