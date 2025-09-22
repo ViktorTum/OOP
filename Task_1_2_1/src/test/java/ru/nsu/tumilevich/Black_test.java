@@ -1,0 +1,1 @@
+package ru.nsu.tumilevich;// ИСПРАВЛЕНО: Порядок импортов и убраны '*'import org.junit.jupiter.api.Test;import static org.junit.jupiter.api.Assertions.assertArrayEquals;import static ru.nsu.tumilevich.Sort.heapsort;@SuppressWarnings("checkstyle:Indentation")class Black_test {    @Test    void deck_test() {    }}
