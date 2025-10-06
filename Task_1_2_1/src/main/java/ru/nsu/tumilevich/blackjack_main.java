@@ -1,6 +1,5 @@
 package ru.nsu.tumilevich;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
@@ -12,42 +11,42 @@ import java.util.Scanner;
  */
 
 class Deck {
-    static String[] suits = {"пик", "червей", "бубен", "треф"};
-	static String[] ranks = {"Туз", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Валет", "Дама", "Король"};
+	String[] deck = new String[52];
+	int cardIndex = 0;  // Нестатическое поле - у каждого экземпляра свое
+	int card_now = 0;   // Нестатическое поле - у каждого экземпляра свое
 
-    static String[] deck = new String[52];
-    static int cardIndex = 0;
+	public void make_deck() {  // Убрать параметр Deck
+		String[] suits = {"пик", "червей", "бубен", "треф"};
+		String[] ranks = {"Туз", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Валет", "Дама", "Король"};
 
-	static int card_now = 0;
+		this.cardIndex = 0;  // Работаем с полями этого экземпляра
+		for (String suit : suits) {
+			for (String rank : ranks) {
+				this.deck[this.cardIndex++] = rank + " " + suit;
+			}
+		}
+	}
 
-    //создание и перетасовка колоды
-    public static void up_date_deck(){
-	    //создание колоды
-        cardIndex = 0;
-        for (String suit : suits) {
-            for (String rank : ranks) {
-                deck[cardIndex++] = rank + " " + suit;
-            }
-        }
+	public void up_date_deck() {  // Убрать параметр Deck
+		Random rand = new Random();
+		for (int i = this.deck.length - 1; i > 0; i--) {
+			int j = rand.nextInt(i + 1);
 
-		//мешаю колоду
-        Random rand = new Random();
-	    for (int i = deck.length - 1; i > 0; i--) {
-		    int j = rand.nextInt(i + 1);
+			String temp = this.deck[i];
+			this.deck[i] = this.deck[j];
+			this.deck[j] = temp;
+		}
+	}
 
-		    String temp = deck[i];
-		    deck[i] = deck[j];
-		    deck[j] = temp;
-	    }
-    }
+	public String give_first_card() {  // Убрать параметр Deck
+		if (this.card_now < 52) {
+			return this.deck[this.card_now++];
+		}
+		return null;
+	}
 
-	//взять одну карту
-    public static String give_first_card() {
-		return deck[card_now++];
-    }
-
-	public  static String[] see_all_cards() {
-		return deck;
+	public String[] see_all_cards() {  // Убрать параметр Deck
+		return this.deck;
 	}
 }
 
@@ -56,13 +55,13 @@ class Player {
 	public int summ_card = 0;
 	int clear_summ = 0;
 	int tus_col = 0;
-	public String[] cards = new String[11];
+	public String[] cards = new String[53];
 
 	//берет карту из деки
 	//возврат стистики:
 	//0 - проигрыш, 1 - продолжаем, 2 - победа, а массив карт хранится в игроке
-	public String take_card(Deck deck) {
-		String card = deck.give_first_card();
+	public String take_card(Deck gdeck) {
+		String card = gdeck.give_first_card();
 		cards[kol_vo_card++] = card;
 
 		// Получаем ранг карты (первое слово)
@@ -93,10 +92,10 @@ class Player {
 		return card;
 	}
 
-	public void show_my_cards() {
+	public int show_my_cards() {
 		if  (kol_vo_card == 0) {
 			System.out.print("[]");
-			return;
+			return summ_card;
 		}
 
 		System.out.print("[");
@@ -106,6 +105,8 @@ class Player {
 		System.out.print(cards[kol_vo_card - 1]);
 		System.out.print("]");
 		System.out.println(" => " + summ_card);
+
+		return summ_card;
 	}
 }
 
@@ -127,7 +128,15 @@ class Krupie extends Player {
 public class blackjack_main {
 	static Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) {
+	public static Scanner getScanner() {
+		return scanner;
+	}
+
+	public static void setScanner(Scanner newScanner) {
+		scanner = newScanner;
+	}
+
+	public static void main(String[] args) {
 		System.out.println("Добро пожаловать в Блэкджек!");
 		int num_raund = 0;
 		int pl_vin = 0;
@@ -160,6 +169,7 @@ public class blackjack_main {
 		Player player = new Player();
 		Krupie krupie = new Krupie();
 		Deck deck = new Deck();
+		deck.make_deck();
 		deck.up_date_deck();
 
 		//начало игры
