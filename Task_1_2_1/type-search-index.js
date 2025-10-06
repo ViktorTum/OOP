@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"ru.nsu.tumilevich","l":"blackjack_main"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"ru.nsu.tumilevich","l":"BlackjackMain"},{"p":"ru.nsu.tumilevich","l":"Deck"},{"p":"ru.nsu.tumilevich","l":"Krupie"},{"p":"ru.nsu.tumilevich","l":"Player"}];updateSearchResults();
