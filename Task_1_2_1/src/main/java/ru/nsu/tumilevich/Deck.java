@@ -14,7 +14,7 @@ public class Deck {
 	private final String[] suits = {"пик", "червей", "бубен", "треф"};
 	private final String[] ranks = {"Туз", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Валет", "Дама", "Король"};
 
-	private Random rand = new Random();
+	private final Random rand = new Random();
 	/**
 	 * Конструктор класса Deck.
 	 * Автоматически создает и перемешивает колоду при создании объекта.
