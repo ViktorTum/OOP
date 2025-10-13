@@ -60,7 +60,7 @@ public final class Sort {
             array = heapify(array, largest, ln);
         }
         return array;
-    }
+<    }
 
     /**
      * Точка входа в программу.
