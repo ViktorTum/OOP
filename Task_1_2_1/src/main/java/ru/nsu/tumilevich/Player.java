@@ -18,7 +18,7 @@ public class Player {
 	 * @return Название взятой карты.
 	 */
 	public String TakeCard(Deck gameDeck) {
-		String card = gameDeck.GiveFirstCard();
+		String card = gameDeck.giveFirstCard();
 		if (card == null) {
 			System.out.println("В колоде закончились карты!");
 			return "Нет карты";

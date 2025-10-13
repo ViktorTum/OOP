@@ -9,8 +9,12 @@ import java.util.Random;
 public class Deck {
 
 	private final String[] deck = new String[52];
-	private int cardNow = 0;
+	private int cardNow = 0; // карта, которую вытягивают
 
+	private final String[] suits = {"пик", "червей", "бубен", "треф"};
+	private final String[] ranks = {"Туз", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Валет", "Дама", "Король"};
+
+	private Random rand = new Random();
 	/**
 	 * Конструктор класса Deck.
 	 * Автоматически создает и перемешивает колоду при создании объекта.
@@ -24,8 +28,6 @@ public class Deck {
 	 * Создает стандартную колоду из 52 карт.
 	 */
 	private void makeDeck() {
-		final String[] suits = {"пик", "червей", "бубен", "треф"};
-		final String[] ranks = {"Туз", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Валет", "Дама", "Король"};
 		int cardIndex = 0; // Используем локальный индекс для заполнения
 
 		for (String suit : suits) {
@@ -40,7 +42,7 @@ public class Deck {
 	 * Перемешивает колоду в случайном порядке.
 	 */
 	private void updateDeck() {
-		Random rand = new Random();
+
 		for (int i = this.deck.length - 1; i > 0; i--) {
 			int j = rand.nextInt(i + 1);
 			String temp = this.deck[i];
@@ -53,7 +55,7 @@ public class Deck {
 	 * Выдает одну карту с верха колоды.
 	 * @return Строка с названием карты или null, если карты закончились.
 	 */
-	public String GiveFirstCard() {
+	public String giveFirstCard() {
 		if (this.cardNow < 52) {
 			return this.deck[this.cardNow++];
 		}

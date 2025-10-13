@@ -14,10 +14,10 @@ class BlackjackTest {
 		Deck deck = new Deck(); // Колода уже создана и перемешана
 		String[] allDeck = deck.SeeAllCards();
 		for (int i = 0; i < 52; i++) {
-			boolean isPresent = Arrays.asList(allDeck).contains(deck.GiveFirstCard());
+			boolean isPresent = Arrays.asList(allDeck).contains(deck.giveFirstCard());
 			assertTrue(isPresent);
 		}
-		assertNull(deck.GiveFirstCard());
+		assertNull(deck.giveFirstCard());
 	}
 
 	@Test
