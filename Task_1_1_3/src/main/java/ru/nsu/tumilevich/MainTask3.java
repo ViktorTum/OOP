@@ -1,18 +1,18 @@
 package ru.nsu.tumilevich;
 
-import java.util.Map;
+
 
 public class MainTask3 {
 	public static void main(String[] args) {
-		// Старый пример
+		// Пример использования
 		Expression e = new Add(new Number(3), new Mul(new Number(2), new Variable("x")));
 
 		Expression de = e.derivative("x");
-		de.print();
+		System.out.println("Выражение: " + e.toString());
+		System.out.println("Производная по x: " + de.toString());
 
-		int result = e.eval("x = 10; y = 13");
-		e.print();
-		System.out.println(result);
+		int result = ExpressionUtils.eval(e, "x = 10; y = 13");
+		System.out.println("Результат при x = 10; y = 13: " + result);
 
 
 
@@ -33,15 +33,15 @@ public class MainTask3 {
 			try {
 				System.out.println("\nПарсинг: " + exprStr);
 				Expression parsedExpr = parser.parse(exprStr);
-				parsedExpr.print();
+				System.out.println("Выражение: " + parsedExpr.toString());
 
 
 				Expression derivative = parsedExpr.derivative("x");
 				System.out.print("Производная: ");
-				derivative.print();
+				System.out.println("Производная: " + derivative.toString());
 
 
-				int parsedResult = parsedExpr.eval("x = 2");
+				int parsedResult = ExpressionUtils.eval(parsedExpr, "x = 2");
 				System.out.println("Результат при x=2: " + parsedResult);
 
 			} catch (Exception ex) {
@@ -54,12 +54,10 @@ public class MainTask3 {
 			try {
 				System.out.println("\n--- Из командной строки ---");
 				Expression cmdExpr = parser.parse(args[0]);
-				System.out.print("Выражение: ");
-				cmdExpr.print();
+				System.out.println("Выражение: " + cmdExpr.toString());
 
 				Expression cmdDerivative = cmdExpr.derivative("x");
-				System.out.print("Производная: ");
-				cmdDerivative.print();
+				System.out.println("Производная: " + cmdDerivative.toString());
 
 			} catch (Exception ex) {
 				System.out.println("Ошибка парсинга аргумента: " + ex.getMessage());

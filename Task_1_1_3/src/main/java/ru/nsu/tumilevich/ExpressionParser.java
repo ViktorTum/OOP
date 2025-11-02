@@ -32,13 +32,13 @@ public class ExpressionParser {
 		Expression right = parseExpression();
 		expect(')');
 
-		switch (operator) {
-			case "+": return new Add(left, right);
-			case "-": return new Sub(left, right);
-			case "*": return new Mul(left, right);
-			case "/": return new Div(left, right);
-			default: throw new IllegalArgumentException("Unknown operator: " + operator);
-		}
+        return switch (operator) {
+            case "+" -> new Add(left, right);
+            case "-" -> new Sub(left, right);
+            case "*" -> new Mul(left, right);
+            case "/" -> new Div(left, right);
+            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+        };
 	}
 
 	private String parseOperator() {
