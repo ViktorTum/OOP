@@ -2,13 +2,17 @@ package ru.nsu.tumilevich;
 
 import java.util.Map;
 
+/*
+	Для создания нового операции нужно реализовать функци evaluate derivative toString в новом классе функции
+	а так же класс должен implements Expression
+ */
 interface Expression{
-	//Вычисляет значение выражения в заданном контексте.
+	/*
+		evaluate - реализация функции
+		derivative - производная этой функции
+	 */
 
 	int evaluate(Map<String, Integer> context);
-	//Вычисляет производную выражения по заданной переменной.
 	Expression derivative(String var);
-	String toString();
-
 
 }
