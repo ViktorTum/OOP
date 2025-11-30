@@ -1,31 +1,27 @@
 package ru.nsu.tumilevich;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.io.*;
 
-public interface Graph {
+interface Graph {
     // Основные операции
-    void addVertex(String vertex);
-    void removeVertex(String vertex);
-    void addEdge(String source, String destination);
-    void removeEdge(String source, String destination);
+    boolean addVertex(String vertex);
+    boolean removeVertex(String vertex);
+    boolean addEdge(String source, String destination);
+    boolean removeEdge(String source, String destination);
     List<String> getNeighbors(String vertex);
-
-    // Чтение из файла
     void readFromFile(String filename) throws IOException;
 
     // Дополнительные операции
-    List<String> getVertices();
+    Set<String> getVertices();
+    boolean hasVertex(String vertex);
+    boolean hasEdge(String source, String destination);
     int getVertexCount();
     int getEdgeCount();
 
-    // Алгоритмы
-    List<String> topologicalSort();
-
     // Стандартные методы
-    @Override
     boolean equals(Object obj);
-    @Override
     String toString();
+    int hashCode();
 }
 
