@@ -10,7 +10,10 @@ public class HashTable<K, V> implements Iterable<Map.Entry<K, V>> {
     private int size;
     private int modCount;
 
-    //создание таблицы
+    /**
+    * создание таблицы
+    */
+
     public HashTable() {
         table = (Node<K, V>[]) new Node[DEFAULT_CAPACITY];
         size = 0;
