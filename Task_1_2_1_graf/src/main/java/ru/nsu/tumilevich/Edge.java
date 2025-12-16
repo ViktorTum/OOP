@@ -2,10 +2,9 @@ package ru.nsu.tumilevich;
 
 import java.util.Objects;
 
-// Вспомогательный класс для хранения ребра
-class Edge {
-    String source;
-    String destination;
+public class Edge {
+    public final String source;
+    public final String destination;
 
     public Edge(String source, String destination) {
         this.source = source;
@@ -13,10 +12,10 @@ class Edge {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Edge edge = (Edge) obj;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Edge edge = (Edge) o;
         return Objects.equals(source, edge.source) &&
                 Objects.equals(destination, edge.destination);
     }
@@ -28,6 +27,6 @@ class Edge {
 
     @Override
     public String toString() {
-        return source + "->" + destination;
+        return source + " -> " + destination;
     }
 }

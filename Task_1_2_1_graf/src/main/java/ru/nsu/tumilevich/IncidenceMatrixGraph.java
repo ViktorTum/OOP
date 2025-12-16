@@ -1,13 +1,21 @@
 package ru.nsu.tumilevich;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-class IncidenceMatrixGraph implements Graph {
-    private final List<String> vertices;
-    private final List<Edge> edges;
-    private int[][] incidenceMatrix;
-    private final Map<String, Integer> vertexIndex;
+/**
+ * Реализация графа с использованием матрицы инцидентности.
+ * В матрице инцидентности:
+ * - 1 означает, что вершина является началом ребра
+ * - -1 означает, что вершина является концом ребра
+ * - 0 означает, что вершина не инцидентна ребру
+ */
+
+public class IncidenceMatrixGraph implements Graph {
+    private final List<String> vertices;           // Список вершин
+    private final List<Edge> edges;                // Список ребер
+    private int[][] incidenceMatrix;              // Матрица инцидентности
+    private final Map<String, Integer> vertexIndex; // Карта для быстрого доступа к индексам вершин
 
     public IncidenceMatrixGraph() {
         vertices = new ArrayList<>();
@@ -25,12 +33,12 @@ class IncidenceMatrixGraph implements Graph {
         vertices.add(vertex);
         vertexIndex.put(vertex, vertices.size() - 1);
 
-        // Расширяем матрицу инцидентности
         int[][] newMatrix = new int[vertices.size()][edges.size()];
         for (int i = 0; i < incidenceMatrix.length; i++) {
             System.arraycopy(incidenceMatrix[i], 0, newMatrix[i], 0, incidenceMatrix[i].length);
         }
         incidenceMatrix = newMatrix;
+
         return true;
     }
 
@@ -42,7 +50,6 @@ class IncidenceMatrixGraph implements Graph {
 
         int index = vertexIndex.get(vertex);
 
-        // Находим все ребра, связанные с вершиной
         List<Edge> edgesToRemove = new ArrayList<>();
         for (Edge edge : edges) {
             if (edge.source.equals(vertex) || edge.destination.equals(vertex)) {
@@ -50,21 +57,17 @@ class IncidenceMatrixGraph implements Graph {
             }
         }
 
-        // Удаляем ребра
         for (Edge edge : edgesToRemove) {
             removeEdge(edge.source, edge.destination);
         }
 
-        // Удаляем вершину
         vertices.remove(index);
         vertexIndex.remove(vertex);
 
-        // Обновляем индексы
         for (int i = 0; i < vertices.size(); i++) {
             vertexIndex.put(vertices.get(i), i);
         }
 
-        // Создаем новую матрицу
         int[][] newMatrix = new int[vertices.size()][edges.size()];
         for (int i = 0; i < vertices.size(); i++) {
             for (int j = 0; j < edges.size(); j++) {
@@ -75,6 +78,7 @@ class IncidenceMatrixGraph implements Graph {
             }
         }
         incidenceMatrix = newMatrix;
+
         return true;
     }
 
@@ -84,31 +88,27 @@ class IncidenceMatrixGraph implements Graph {
             return false;
         }
 
-        // Проверяем, существует ли уже такое ребро
         for (Edge edge : edges) {
             if (edge.source.equals(source) && edge.destination.equals(destination)) {
                 return false;
             }
         }
 
-        // Добавляем ребро
         Edge newEdge = new Edge(source, destination);
         edges.add(newEdge);
 
-        // Расширяем матрицу инцидентности
         int[][] newMatrix = new int[vertices.size()][edges.size()];
         for (int i = 0; i < incidenceMatrix.length; i++) {
             System.arraycopy(incidenceMatrix[i], 0, newMatrix[i], 0, incidenceMatrix[i].length);
         }
         incidenceMatrix = newMatrix;
 
-        // Заполняем новый столбец
         int sourceIdx = vertexIndex.get(source);
         int destIdx = vertexIndex.get(destination);
         int edgeIdx = edges.size() - 1;
 
-        incidenceMatrix[sourceIdx][edgeIdx] = 1;   // Исходная вершина
-        incidenceMatrix[destIdx][edgeIdx] = -1;    // Конечная вершина
+        incidenceMatrix[sourceIdx][edgeIdx] = 1;
+        incidenceMatrix[destIdx][edgeIdx] = -1;
 
         return true;
     }
@@ -128,10 +128,8 @@ class IncidenceMatrixGraph implements Graph {
             return false;
         }
 
-        // Удаляем ребро
         edges.remove(edgeIndex);
 
-        // Создаем новую матрицу без удаленного столбца
         int[][] newMatrix = new int[vertices.size()][edges.size()];
         for (int i = 0; i < vertices.size(); i++) {
             for (int j = 0; j < edges.size(); j++) {
@@ -140,6 +138,7 @@ class IncidenceMatrixGraph implements Graph {
             }
         }
         incidenceMatrix = newMatrix;
+
         return true;
     }
 
@@ -153,10 +152,9 @@ class IncidenceMatrixGraph implements Graph {
         List<String> neighbors = new ArrayList<>();
 
         for (int j = 0; j < edges.size(); j++) {
-            if (incidenceMatrix[vertexIdx][j] == 1) { // Вершина является исходной
-                // Находим конечную вершину для этого ребра
+            if (incidenceMatrix[vertexIdx][j] == 1) {
                 for (int i = 0; i < vertices.size(); i++) {
-                    if (incidenceMatrix[i][j] == -1) { // Конечная вершина
+                    if (incidenceMatrix[i][j] == -1) {
                         neighbors.add(vertices.get(i));
                         break;
                     }
@@ -228,8 +226,9 @@ class IncidenceMatrixGraph implements Graph {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Graph other)) return false;
+
         return getVertices().equals(other.getVertices()) &&
-                getAllEdges().equals(getAllEdges(other));
+                getAllEdges().equals(getAllEdgesFromGraph(other));
     }
 
     @Override
@@ -244,10 +243,15 @@ class IncidenceMatrixGraph implements Graph {
         sb.append("  Vertices: ").append(vertices).append("\n");
         sb.append("  Edges: ").append(edges).append("\n");
 
-        // Вывод матрицы инцидентности для отладки
         sb.append("  Incidence Matrix:\n");
+        sb.append("       ");
+        for (int j = 0; j < edges.size(); j++) {
+            sb.append(String.format("e%d ", j));
+        }
+        sb.append("\n");
+
         for (int i = 0; i < vertices.size(); i++) {
-            sb.append("    ").append(vertices.get(i)).append(": ");
+            sb.append(String.format("%-5s", vertices.get(i) + ": "));
             for (int j = 0; j < edges.size(); j++) {
                 sb.append(String.format("%2d ", incidenceMatrix[i][j]));
             }
@@ -261,7 +265,8 @@ class IncidenceMatrixGraph implements Graph {
         return new HashSet<>(edges);
     }
 
-    private Set<Edge> getAllEdges(Graph graph) {
+
+    private Set<Edge> getAllEdgesFromGraph(Graph graph) {
         Set<Edge> edges = new HashSet<>();
         for (String vertex : graph.getVertices()) {
             for (String neighbor : graph.getNeighbors(vertex)) {

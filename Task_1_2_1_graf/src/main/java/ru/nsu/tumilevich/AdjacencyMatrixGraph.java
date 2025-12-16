@@ -1,19 +1,19 @@
 package ru.nsu.tumilevich;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-class AdjacencyMatrixGraph implements Graph {
-    private final Map<String, Integer> vertexIndex;
-    private final List<String> vertices;
-    private boolean[][] matrix;
-    private int edgeCount;
+
+public class AdjacencyMatrixGraph implements Graph {
+    private final List<String> vertices;           // Список вершин
+    private final Map<String, Integer> vertexIndex; // Карта для быстрого доступа к индексам вершин
+    private boolean[][] adjacencyMatrix;           // Матрица смежности
+
 
     public AdjacencyMatrixGraph() {
-        vertexIndex = new HashMap<>();
         vertices = new ArrayList<>();
-        matrix = new boolean[0][0];
-        edgeCount = 0;
+        vertexIndex = new HashMap<>();
+        adjacencyMatrix = new boolean[0][0];
     }
 
     @Override
@@ -25,12 +25,12 @@ class AdjacencyMatrixGraph implements Graph {
         vertices.add(vertex);
         vertexIndex.put(vertex, vertices.size() - 1);
 
-        // Расширяем матрицу
         boolean[][] newMatrix = new boolean[vertices.size()][vertices.size()];
-        for (int i = 0; i < matrix.length; i++) {
-            System.arraycopy(matrix[i], 0, newMatrix[i], 0, matrix.length);
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            System.arraycopy(adjacencyMatrix[i], 0, newMatrix[i], 0, adjacencyMatrix[i].length);
         }
-        matrix = newMatrix;
+        adjacencyMatrix = newMatrix;
+
         return true;
     }
 
@@ -42,33 +42,25 @@ class AdjacencyMatrixGraph implements Graph {
 
         int index = vertexIndex.get(vertex);
 
-        // Удаляем все связанные ребра
-        for (int i = 0; i < matrix.length; i++) {
-            if (matrix[index][i]) edgeCount--;
-            if (matrix[i][index]) edgeCount--;
-        }
-
-        // Удаляем вершину из списков
         vertices.remove(index);
         vertexIndex.remove(vertex);
 
-        // Обновляем индексы
         for (int i = 0; i < vertices.size(); i++) {
             vertexIndex.put(vertices.get(i), i);
         }
 
-        // Создаем новую матрицу
         boolean[][] newMatrix = new boolean[vertices.size()][vertices.size()];
         for (int i = 0; i < vertices.size(); i++) {
             for (int j = 0; j < vertices.size(); j++) {
                 int oldI = i < index ? i : i + 1;
                 int oldJ = j < index ? j : j + 1;
-                if (oldI < matrix.length && oldJ < matrix.length) {
-                    newMatrix[i][j] = matrix[oldI][oldJ];
+                if (oldI < adjacencyMatrix.length && oldJ < adjacencyMatrix.length) {
+                    newMatrix[i][j] = adjacencyMatrix[oldI][oldJ];
                 }
             }
         }
-        matrix = newMatrix;
+        adjacencyMatrix = newMatrix;
+
         return true;
     }
 
@@ -78,15 +70,14 @@ class AdjacencyMatrixGraph implements Graph {
             return false;
         }
 
-        int sourceIndex = vertexIndex.get(source);
-        int destIndex = vertexIndex.get(destination);
+        int sourceIdx = vertexIndex.get(source);
+        int destIdx = vertexIndex.get(destination);
 
-        if (matrix[sourceIndex][destIndex]) {
-            return false; // Ребро уже существует
+        if (adjacencyMatrix[sourceIdx][destIdx]) {
+            return false;
         }
 
-        matrix[sourceIndex][destIndex] = true;
-        edgeCount++;
+        adjacencyMatrix[sourceIdx][destIdx] = true;
         return true;
     }
 
@@ -96,15 +87,14 @@ class AdjacencyMatrixGraph implements Graph {
             return false;
         }
 
-        int sourceIndex = vertexIndex.get(source);
-        int destIndex = vertexIndex.get(destination);
+        int sourceIdx = vertexIndex.get(source);
+        int destIdx = vertexIndex.get(destination);
 
-        if (!matrix[sourceIndex][destIndex]) {
-            return false; // Ребро не существует
+        if (!adjacencyMatrix[sourceIdx][destIdx]) {
+            return false;
         }
 
-        matrix[sourceIndex][destIndex] = false;
-        edgeCount--;
+        adjacencyMatrix[sourceIdx][destIdx] = false;
         return true;
     }
 
@@ -114,13 +104,15 @@ class AdjacencyMatrixGraph implements Graph {
             return Collections.emptyList();
         }
 
-        int index = vertexIndex.get(vertex);
+        int vertexIdx = vertexIndex.get(vertex);
         List<String> neighbors = new ArrayList<>();
-        for (int i = 0; i < matrix.length; i++) {
-            if (matrix[index][i]) {
-                neighbors.add(vertices.get(i));
+
+        for (int j = 0; j < vertices.size(); j++) {
+            if (adjacencyMatrix[vertexIdx][j]) {
+                neighbors.add(vertices.get(j));
             }
         }
+
         return neighbors;
     }
 
@@ -166,9 +158,10 @@ class AdjacencyMatrixGraph implements Graph {
         if (!vertexIndex.containsKey(source) || !vertexIndex.containsKey(destination)) {
             return false;
         }
-        int sourceIndex = vertexIndex.get(source);
-        int destIndex = vertexIndex.get(destination);
-        return matrix[sourceIndex][destIndex];
+
+        int sourceIdx = vertexIndex.get(source);
+        int destIdx = vertexIndex.get(destination);
+        return adjacencyMatrix[sourceIdx][destIdx];
     }
 
     @Override
@@ -178,37 +171,69 @@ class AdjacencyMatrixGraph implements Graph {
 
     @Override
     public int getEdgeCount() {
-        return edgeCount;
+        int count = 0;
+        for (int i = 0; i < vertices.size(); i++) {
+            for (int j = 0; j < vertices.size(); j++) {
+                if (adjacencyMatrix[i][j]) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Graph other = (Graph) obj;
+        if (!(obj instanceof Graph other)) return false;
+
         return getVertices().equals(other.getVertices()) &&
-                getAllEdges().equals(getAllEdges(other));
+                getEdges().equals(getEdgesFromGraph(other));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getVertices(), getAllEdges());
+        return Objects.hash(getVertices(), getEdges());
     }
 
     @Override
     public String toString() {
-        String sb = "AdjacencyMatrixGraph {\n" +
-                "  Vertices: " + vertices + "\n" +
-                "  Edges: " + getAllEdges() + "\n" +
-                "}";
-        return sb;
+        StringBuilder sb = new StringBuilder();
+        sb.append("AdjacencyMatrixGraph {\n");
+        sb.append("  Vertices: ").append(vertices).append("\n");
+
+        // Вывод матрицы смежности
+        sb.append("  Adjacency Matrix:\n");
+        sb.append("     ");
+        for (String vertex : vertices) {
+            sb.append(String.format("%-3s", vertex.substring(0, Math.min(3, vertex.length())) + " "));
+        }
+        sb.append("\n");
+
+        for (int i = 0; i < vertices.size(); i++) {
+            sb.append(String.format("%-4s", vertices.get(i) + ": "));
+            for (int j = 0; j < vertices.size(); j++) {
+                sb.append(String.format("%-3s", adjacencyMatrix[i][j] ? "1" : "0"));
+            }
+            sb.append("\n");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
-    private Set<Edge> getAllEdges() {
-        return getAllEdges(this);
+    private Set<Edge> getEdges() {
+        Set<Edge> edges = new HashSet<>();
+        for (int i = 0; i < vertices.size(); i++) {
+            for (int j = 0; j < vertices.size(); j++) {
+                if (adjacencyMatrix[i][j]) {
+                    edges.add(new Edge(vertices.get(i), vertices.get(j)));
+                }
+            }
+        }
+        return edges;
     }
 
-    private Set<Edge> getAllEdges(Graph graph) {
+    private Set<Edge> getEdgesFromGraph(Graph graph) {
         Set<Edge> edges = new HashSet<>();
         for (String vertex : graph.getVertices()) {
             for (String neighbor : graph.getNeighbors(vertex)) {

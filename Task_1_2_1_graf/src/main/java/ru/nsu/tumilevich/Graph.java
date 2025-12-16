@@ -1,10 +1,10 @@
 package ru.nsu.tumilevich;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
-interface Graph {
-    // Основные операции
+public interface Graph {
     boolean addVertex(String vertex);
     boolean removeVertex(String vertex);
     boolean addEdge(String source, String destination);
@@ -12,16 +12,12 @@ interface Graph {
     List<String> getNeighbors(String vertex);
     void readFromFile(String filename) throws IOException;
 
-    // Дополнительные операции
     Set<String> getVertices();
     boolean hasVertex(String vertex);
     boolean hasEdge(String source, String destination);
     int getVertexCount();
     int getEdgeCount();
-
-    // Стандартные методы
     boolean equals(Object obj);
     String toString();
     int hashCode();
 }
-
