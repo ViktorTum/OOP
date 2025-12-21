@@ -18,13 +18,11 @@ class SubstringFinderTest {
 	private final String testFileName = "test_input.txt";
 	private Path testFilePath;
 
-	// Этот метод выполняется перед каждым тестом
 	@BeforeEach
 	void setUp() {
 		testFilePath = Paths.get(testFileName);
 	}
 
-	// Этот метод выполняется после каждого теста для очистки
 	@AfterEach
 	void tearDown() throws IOException {
 		Files.deleteIfExists(testFilePath);
@@ -71,11 +69,10 @@ class SubstringFinderTest {
 
 	@Test
 	void testOverlapCase() throws IOException {
-		// Создаем строку, где вхождение "ab" находится на границе буфера (размер 8192)
 		int bufferSize = 8192;
 		String part1 = "x".repeat(bufferSize - 1);
 		String part2 = "by";
-		createTestFile(part1 + "a" + part2); // ...xxxxabyy...
+		createTestFile(part1 + "a" + part2);
 
 		List<Long> expected = List.of((long)bufferSize - 1);
 		List<Long> actual = SubstringFinder.find(testFileName, "ab");

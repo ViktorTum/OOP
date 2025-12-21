@@ -1,53 +1,63 @@
 package ru.nsu.tumilevich;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 
 public class SubstringFinder {
 
-    /**
-     * Находит все вхождения подстроки в файле.
-     *
-     * @param fileName Имя файла для поиска.
-     * @param subString Подстрока для поиска.
-     * @return Список индексов (типа long) начала каждого вхождения подстроки.
-     * @throws IOException если возникает ошибка при чтении файла.
-     */
-    public static List<Long> find(String fileName, String subString) throws IOException {
-        List<Long> occurrences = new ArrayList<>();
-        if (subString == null || subString.isEmpty()) {
-            return occurrences;
+    public static List<Long> find(String filename, String pattern) throws IOException {
+        Path path = Paths.get(filename);
+        if (!Files.exists(path)) {
+            throw new IOException("File not found: " + filename);
         }
 
-        int subStringLength = subString.length();
-        int bufferSize = 8192;
-        char[] buffer = new char[bufferSize];
+        if (pattern == null || pattern.isEmpty()) {
+            return List.of();
+        }
 
-        String overlap = "";
-        long filePosition = 0;
+        String content = Files.readString(path, StandardCharsets.UTF_8);
+        int n = content.length();
+        int m = pattern.length();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8))) {
-            int charsRead;
-            while ((charsRead = reader.read(buffer, 0, bufferSize)) != -1) {
-                String blockToSearch = overlap + new String(buffer, 0, charsRead);
+        if (m > n) {
+            return List.of();
+        }
 
-                int index = -1;
-                while ((index = blockToSearch.indexOf(subString, index + 1)) != -1) {
-                    occurrences.add(filePosition + index);
-                }
+        int[] charIndexToCodePointIndex = new int[n];
+        Arrays.fill(charIndexToCodePointIndex, -1);
 
-                int overlapLength = Math.min(blockToSearch.length(), subStringLength - 1);
-                overlap = blockToSearch.substring(blockToSearch.length() - overlapLength);
+        int currentCodePointIndex = 0;
+        for (int i = 0; i < n; ) {
+            int codePoint = content.codePointAt(i);
+            int charCount = Character.charCount(codePoint);
+            charIndexToCodePointIndex[i] = currentCodePointIndex;
+            i += charCount;
+            currentCodePointIndex++;
+        }
 
-                filePosition += blockToSearch.length() - overlapLength;
+        List<Long> result = new ArrayList<>();
+        int index = 0;
+        while (index <= n - m) {
+            index = content.indexOf(pattern, index);
+            if (index == -1) {
+                break;
             }
+
+            if (charIndexToCodePointIndex[index] == -1) {
+                index++;
+                continue;
+            }
+
+            result.add((long) charIndexToCodePointIndex[index]);
+            index += m;
         }
 
-        return occurrences;
+        return result;
     }
 }
