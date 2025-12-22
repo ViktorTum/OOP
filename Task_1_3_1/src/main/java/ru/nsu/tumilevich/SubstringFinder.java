@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SubstringFinder {
+public final class SubstringFinder {
 
     public static List<Long> find(String filename, String pattern) throws IOException {
         Path path = Paths.get(filename);
@@ -21,6 +21,7 @@ public class SubstringFinder {
             return List.of();
         }
 
+        //TODO read stream
         String content = Files.readString(path, StandardCharsets.UTF_8);
         int n = content.length();
         int m = pattern.length();
@@ -59,5 +60,9 @@ public class SubstringFinder {
         }
 
         return result;
+    }
+
+    private SubstringFinder() {
+        throw new UnsupportedOperationException();
     }
 }
