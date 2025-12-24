@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class SubstringFinder {
+public final class SubstringFinder {
 
     public static List<Long> find(String filename, String pattern) throws IOException {
         if (pattern == null || pattern.isEmpty()) {
@@ -106,5 +106,9 @@ public class SubstringFinder {
         }
 
         return result;
+    }
+
+    private SubstringFinder() {
+        throw new UnsupportedOperationException();
     }
 }
