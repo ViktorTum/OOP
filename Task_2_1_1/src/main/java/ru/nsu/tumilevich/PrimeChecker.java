@@ -3,13 +3,22 @@ package ru.nsu.tumilevich;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Класс для лабораторной по многопоточке.
+ * Задача: найти хотя бы одно непростое (составное) число в массиве тремя разными способами.
+ */
 public class PrimeChecker {
 
-    // Вспомогательный метод для проверки числа на простоту
-    public static boolean isPrime(int number) {
+    /**
+     * Проверка числа на простоту.
+     * @param number проверяемое число
+     * @return true если число простое, иначе false
+     */
+    static boolean isPrime(int number) {
         if (number <= 1) return false;
         if (number == 2) return true;
         if (number % 2 == 0) return false;
+
         for (int i = 3; i <= Math.sqrt(number); i += 2) {
             if (number % i == 0) {
                 return false;
@@ -18,8 +27,12 @@ public class PrimeChecker {
         return true;
     }
 
-    // 1. Последовательное решение
-    public static boolean hasNonPrimeSequential(int[] numbers) {
+    /**
+     * 1. Обычный последовательный перебор массива в один поток.
+     * @param numbers входной массив
+     * @return true, если нашли непростое число
+     */
+    static boolean hasNonPrimeSequential(int[] numbers) {
         for (int n : numbers) {
             if (!isPrime(n)) {
                 return true;
@@ -28,8 +41,15 @@ public class PrimeChecker {
         return false;
     }
 
-    // 2. Параллельное решение с использованием java.lang.Thread
-    public static boolean hasNonPrimeThreads(int[] numbers, int numThreads) throws InterruptedException {
+    /**
+     * 2. Многопоточный вариант ручками через Thread.
+     *
+     * @param numbers    массив для проверки
+     * @param numThreads количество потоков
+     * @return true, если нашли непростое число
+     * @throws InterruptedException если потоки прервут во время join
+     */
+    static boolean hasNonPrimeThreads(int[] numbers, int numThreads) throws InterruptedException {
         AtomicBoolean foundNonPrime = new AtomicBoolean(false);
         Thread[] threads = new Thread[numThreads];
 
@@ -64,15 +84,20 @@ public class PrimeChecker {
         return foundNonPrime.get();
     }
 
-    // 3. Параллельное решение с применением parallelStream()
-    public static boolean hasNonPrimeParallelStream(int[] numbers) {
+    /**
+     * 3. Вариант через Stream API.
+     *
+     * @param numbers входной массив
+     * @return true, если есть непростое
+     */
+    static boolean hasNonPrimeParallelStream(int[] numbers) {
         return Arrays.stream(numbers)
                 .parallel()
                 .anyMatch(n -> !isPrime(n));
     }
 
     public static void main(String[] args) throws InterruptedException {
-        // --- Проверка базовых условий из задания ---
+        // --- 1. Проверка примеров ---
         int[] test1 = {6, 8, 7, 13, 5, 9, 4};
         System.out.println("Тест 1 [6, 8, ... 4]: " + hasNonPrimeSequential(test1));
 
@@ -81,23 +106,25 @@ public class PrimeChecker {
         System.out.println("Тест 2 [20319251, ...]: " + hasNonPrimeSequential(test2));
         System.out.println("-------------------------------------------------");
 
-        // --- Тестирование производительности для графика ---
+        // --- 2. Сбор метрик для графика ---
+        // Забиваем массив максимальными простыми числами, чтобы загрузить процессор по полной
         int dataSize = 200_000;
         int[] largePrimeArray = new int[dataSize];
         Arrays.fill(largePrimeArray, 2147483647);
 
+        // Небольшой прогрев JIT-компилятора перед замерами
         hasNonPrimeSequential(test2);
         hasNonPrimeParallelStream(test2);
 
         System.out.println("Начало бенчмарка (массив из " + dataSize + " больших простых чисел):");
 
-        // 1. Последовательное
+        // Замер последовательного
         long startTime = System.currentTimeMillis();
         hasNonPrimeSequential(largePrimeArray);
         long timeSequential = System.currentTimeMillis() - startTime;
         System.out.println("1) Последовательное: " + timeSequential + " мс");
 
-        // 2. Thread (от 2 до 8 потоков)
+        // Замер на разном количестве потоков
         int[] threadCounts = {2, 4, 6, 8};
         for (int threads : threadCounts) {
             startTime = System.currentTimeMillis();
@@ -106,7 +133,7 @@ public class PrimeChecker {
             System.out.println("2) Thread (" + threads + " потоков): " + timeThreads + " мс");
         }
 
-        // 3. parallelStream
+        // Замер параллельных стримов
         startTime = System.currentTimeMillis();
         hasNonPrimeParallelStream(largePrimeArray);
         long timeParallelStream = System.currentTimeMillis() - startTime;
