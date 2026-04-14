@@ -112,19 +112,19 @@ public class PrimeChecker {
         int[] largePrimeArray = new int[dataSize];
         Arrays.fill(largePrimeArray, 2147483647);
 
-        // Небольшой прогрев JIT-компилятора перед замерами
+
         hasNonPrimeSequential(test2);
         hasNonPrimeParallelStream(test2);
 
         System.out.println("Начало бенчмарка (массив из " + dataSize + " больших простых чисел):");
 
-        // Замер последовательного
+
         long startTime = System.currentTimeMillis();
         hasNonPrimeSequential(largePrimeArray);
         long timeSequential = System.currentTimeMillis() - startTime;
         System.out.println("1) Последовательное: " + timeSequential + " мс");
 
-        // Замер на разном количестве потоков
+
         int[] threadCounts = {2, 4, 6, 8};
         for (int threads : threadCounts) {
             startTime = System.currentTimeMillis();
