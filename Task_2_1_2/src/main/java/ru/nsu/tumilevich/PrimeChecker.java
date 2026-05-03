@@ -1,0 +1,160 @@
+package ru.nsu.tumilevich;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Класс для лабораторной по многопоточке.
+ * Полный бенчмарк для построения графика с усами погрешности (error bars).
+ * Измеряет время в НАНОСЕКУНДАХ. Проводит 500 тестов для каждого замера.
+ */
+public class PrimeChecker {
+
+    // Количество повторений каждого замера для статистики
+    private static final int NUM_TESTS = 500;
+
+    // Максимальное простое int, чтобы грузить проц
+    private static final int LARGE_PRIME = 2147483647;
+    // Простое поменьше, чтобы грузить меньше
+    private static final int SMALL_PRIME = 17;
+
+    static boolean isPrime(int number) {
+        if (number <= 1) return false;
+        if (number == 2) return true;
+        if (number % 2 == 0) return false;
+
+        for (int i = 3; i <= Math.sqrt(number); i += 2) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean hasNonPrimeSequential(int[] numbers) {
+        for (int n : numbers) {
+            if (!isPrime(n)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean hasNonPrimeThreads(int[] numbers, int numThreads) throws InterruptedException {
+        AtomicBoolean foundNonPrime = new AtomicBoolean(false);
+        Thread[] threads = new Thread[numThreads];
+
+        int chunkSize = (numbers.length + numThreads - 1) / numThreads;
+
+        for (int i = 0; i < numThreads; i++) {
+            final int start = i * chunkSize;
+            final int end = Math.min(start + chunkSize, numbers.length);
+
+            threads[i] = new Thread(() -> {
+                for (int j = start; j < end; j++) {
+                    if (foundNonPrime.get()) return;
+
+                    if (!isPrime(numbers[j])) {
+                        foundNonPrime.set(true);
+                        return;
+                    }
+                }
+            });
+
+            if (start < numbers.length) {
+                threads[i].start();
+            }
+        }
+
+        for (int i = 0; i < numThreads; i++) {
+            if (threads[i] != null && threads[i].isAlive()) {
+                threads[i].join();
+            }
+        }
+
+        return foundNonPrime.get();
+    }
+
+    static boolean hasNonPrimeParallelStream(int[] numbers) {
+        return Arrays.stream(numbers)
+                .parallel()
+                .anyMatch(n -> !isPrime(n));
+    }
+
+    /**
+     * Вспомогательный метод для прогона одного массива через все тесты и записи данных для статистики.
+     */
+    private static void runBenchmarkForFile(PrintWriter writer, String categoryName, int[] array) throws InterruptedException {
+        System.out.println("Запуск тестов для: " + categoryName + "...");
+        int[] threadCounts = {1, 2, 4, 8, 16, 32, 64};
+
+        // Запускаем каждый тест 500 раз
+        for (int run = 0; run < NUM_TESTS; run++) {
+
+            // 1. Обычное последовательное
+            long startTime = System.nanoTime();
+            hasNonPrimeSequential(array);
+            long timeSeq = System.nanoTime() - startTime;
+            // Пишем в CSV: НазваниеМассива;Метод;Потоки;НомерТеста;Время_нано
+            writer.println(categoryName + ";Sequential;1;" + (run + 1) + ";" + timeSeq);
+
+            // 2. Thread-ы
+            for (int threads : threadCounts) {
+                startTime = System.nanoTime();
+                hasNonPrimeThreads(array, threads);
+                long timeThreads = System.nanoTime() - startTime;
+                writer.println(categoryName + ";Thread;" + threads + ";" + (run + 1) + ";" + timeThreads);
+            }
+
+            // 3. parallelStream
+            startTime = System.nanoTime();
+            hasNonPrimeParallelStream(array);
+            long timeStream = System.nanoTime() - startTime;
+            writer.println(categoryName + ";parallelStream;Auto;" + (run + 1) + ";" + timeStream);
+        }
+        System.out.println("Готово для: " + categoryName + ".\n");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        // Прогрев JIT (чтобы первые замеры не были искусственно замедлены)
+        int[] warmup = {LARGE_PRIME, SMALL_PRIME, LARGE_PRIME};
+        hasNonPrimeSequential(warmup);
+        hasNonPrimeParallelStream(warmup);
+
+        // Размеры массивов
+        int smallSize = 500;    // Соответствует 'small'
+        int largeSize = 250_000; // Соответствует 'big'
+
+        int[] arrSmallSmall = new int[smallSize];
+        Arrays.fill(arrSmallSmall, SMALL_PRIME); // smallsmall.txt
+
+        int[] arrSmallLarge = new int[smallSize];
+        Arrays.fill(arrSmallLarge, LARGE_PRIME); // smallbig.txt
+
+        int[] arrLargeSmall = new int[largeSize];
+        Arrays.fill(arrLargeSmall, SMALL_PRIME); // bigsmall.txt
+
+        int[] arrLargeLarge = new int[largeSize];
+        Arrays.fill(arrLargeLarge, LARGE_PRIME); // bigbig.txt
+
+        System.out.println("Старт глобального бенчмарка (500 тестов для каждого замера, в наносекундах)...");
+
+        String fileName = "benchmark_data.csv";
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println("Array_Category;Algorithm;Threads;Test_Run_Index;Time_ns");
+
+            runBenchmarkForFile(writer, "smallsmall.txt", arrSmallSmall);
+            runBenchmarkForFile(writer, "smallbig.txt", arrSmallLarge);
+            runBenchmarkForFile(writer, "bigsmall.txt", arrLargeSmall);
+            runBenchmarkForFile(writer, "bigbig.txt", arrLargeLarge);
+
+            System.out.println("Бенчмарк успешно завершен! Все данные лежат в файле " + fileName);
+
+        } catch (IOException e) {
+            System.err.println("Ошибка записи в файл: " + e.getMessage());
+        }
+    }
+}

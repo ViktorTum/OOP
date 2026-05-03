@@ -1,1 +1,45 @@
-package ru.nsu.tumilevich;import org.junit.jupiter.api.Test;import static org.junit.jupiter.api.Assertions.*;class BakerTest {	@Test	void testBakerLifecycle() throws InterruptedException {		BlockingQueue<Order> orderQueue = new BlockingQueue<>(5);		BlockingQueue<Order> stock = new BlockingQueue<>(5);		Order order = new Order(1);		orderQueue.put(order);		Baker baker = new Baker(1, 50, orderQueue, stock);		Thread bakerThread = new Thread(baker);		bakerThread.start();		Thread.sleep(150);		assertEquals(1, stock.size());		assertNull(baker.getCurrentOrder());		orderQueue.close();	}	@Test	void testBakerInterruption() throws InterruptedException {		BlockingQueue<Order> orderQueue = new BlockingQueue<>(5);		BlockingQueue<Order> stock = new BlockingQueue<>(5);		Order order = new Order(1);		orderQueue.put(order);		Baker baker = new Baker(1, 5000, orderQueue, stock);		Thread bakerThread = new Thread(baker);		bakerThread.start();		Thread.sleep(100);		bakerThread.interrupt();		bakerThread.join();		assertNotNull(baker.getCurrentOrder());		assertEquals(1, baker.getCurrentOrder().getId());	}}
+package ru.nsu.tumilevich;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class BakerTest {
+
+	@Test
+	void testBakerLifecycle() throws InterruptedException {
+		BlockingQueue<Order> orderQueue = new BlockingQueue<>(5);
+		BlockingQueue<Order> stock = new BlockingQueue<>(5);
+		Order order = new Order(1);
+		orderQueue.put(order);
+
+		Baker baker = new Baker(1, 50, orderQueue, stock);
+		Thread bakerThread = new Thread(baker);
+		bakerThread.start();
+
+		Thread.sleep(150);
+
+		assertEquals(1, stock.size());
+		assertNull(baker.getCurrentOrder());
+
+		orderQueue.close();
+	}
+
+	@Test
+	void testBakerInterruption() throws InterruptedException {
+		BlockingQueue<Order> orderQueue = new BlockingQueue<>(5);
+		BlockingQueue<Order> stock = new BlockingQueue<>(5);
+		Order order = new Order(1);
+		orderQueue.put(order);
+
+		Baker baker = new Baker(1, 5000, orderQueue, stock);
+		Thread bakerThread = new Thread(baker);
+		bakerThread.start();
+
+		Thread.sleep(100);
+		bakerThread.interrupt();
+		bakerThread.join();
+
+		assertNotNull(baker.getCurrentOrder());
+		assertEquals(1, baker.getCurrentOrder().getId());
+	}
+}
