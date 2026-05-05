@@ -1,33 +1,36 @@
 package ru.nsu.tumilevich;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static ru.nsu.tumilevich.PrimeUtil.isPrime;
 
 class PrimeCheckerTest {
 
 	@Test
 	void testIsPrime_EdgeCases() {
-		assertFalse(PrimeChecker.isPrime(-5));
-		assertFalse(PrimeChecker.isPrime(0));
-		assertFalse(PrimeChecker.isPrime(1));
+		assertFalse(isPrime(-5));
+		assertFalse(isPrime(0));
+		assertFalse(isPrime(1));
 	}
 
 	@Test
 	void testIsPrime_Primes() {
-		assertTrue(PrimeChecker.isPrime(2));
-		assertTrue(PrimeChecker.isPrime(3));
-		assertTrue(PrimeChecker.isPrime(7));
+		assertTrue(isPrime(2));
+		assertTrue(isPrime(3));
+		assertTrue(isPrime(7));
 
-		assertTrue(PrimeChecker.isPrime(20319251));
+		assertTrue(isPrime(20319251));
 	}
 
 	@Test
 	void testIsPrime_NonPrimes() {
-		assertFalse(PrimeChecker.isPrime(4));
-		assertFalse(PrimeChecker.isPrime(100));
+		assertFalse(isPrime(4));
+		assertFalse(isPrime(100));
 
-		assertFalse(PrimeChecker.isPrime(9));
-		assertFalse(PrimeChecker.isPrime(15));
+		assertFalse(isPrime(9));
+		assertFalse(isPrime(15));
 	}
 
 	@Test
