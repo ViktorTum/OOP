@@ -1,1 +1,1 @@
-memberSearchIndex = [{"p":"ru.nsu.tumilevich","c":"PrimeChecker","l":"main(String[])","u":"main(java.lang.String[])"},{"p":"ru.nsu.tumilevich","c":"PrimeChecker","l":"PrimeChecker()","u":"%3Cinit%3E()"}];updateSearchResults();
+memberSearchIndex = [{"p":"ru.nsu.tumilevich","c":"Main","l":"Main()","u":"%3Cinit%3E()"},{"p":"ru.nsu.tumilevich","c":"Main","l":"main(String[])","u":"main(java.lang.String[])"},{"p":"ru.nsu.tumilevich","c":"PrimeChecker","l":"PrimeChecker()","u":"%3Cinit%3E()"}];updateSearchResults();
