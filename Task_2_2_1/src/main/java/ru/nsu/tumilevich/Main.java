@@ -7,9 +7,12 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Please provide config file as command line argument");
+        }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            PizzeriaConfig config = mapper.readValue(new File("src/main/java/ru/nsu/tumilevich/config.json"), PizzeriaConfig.class);
+            PizzeriaConfig config = mapper.readValue(new File(args[0]), PizzeriaConfig.class);
             PizzeriaEngine engine = new PizzeriaEngine(config);
 
             int maxId = engine.start();
