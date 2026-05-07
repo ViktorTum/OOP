@@ -1,0 +1,12 @@
+{
+  "stockCapacity": 5,
+  "bakers": [
+    { "cookingTime": 2000 },
+    { "cookingTime": 3000 },
+    { "cookingTime": 4000 }
+  ],
+  "couriers": [
+    { "trunkCapacity": 2, "deliveryTime": 2500 },
+    { "trunkCapacity": 3, "deliveryTime": 3500 }
+  ]
+}

@@ -1,0 +1,45 @@
+package ru.nsu.tumilevich;
+
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CourierTest {
+
+	@Test
+	void testCourierDeliveryMultipleOrders() throws InterruptedException {
+		BlockingQueue<Order> stock = new BlockingQueue<>(5);
+		stock.put(new Order(1));
+		stock.put(new Order(2));
+		stock.put(new Order(3));
+
+		Courier courier = new Courier(1, 2, 200, stock);
+		Thread courierThread = new Thread(courier);
+		courierThread.start();
+
+		Thread.sleep(50);
+
+		assertEquals(1, stock.size(), "На складе должна остаться 1 пицца");
+
+		courierThread.interrupt();
+		courierThread.join();
+	}
+
+	@Test
+	void testCourierInterruption() throws InterruptedException {
+		BlockingQueue<Order> stock = new BlockingQueue<>(5);
+		stock.put(new Order(1));
+		stock.put(new Order(2));
+
+		Courier courier = new Courier(1, 2, 5000, stock);
+		Thread courierThread = new Thread(courier);
+		courierThread.start();
+
+		Thread.sleep(100);
+		courierThread.interrupt();
+		courierThread.join();
+
+		List<Order> unfinished = courier.getCurrentOrders();
+		assertEquals(2, unfinished.size());
+	}
+}
