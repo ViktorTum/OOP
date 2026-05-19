@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.nsu.tumilevich.client.MenuController" prefWidth="800" prefHeight="600" style="-fx-background-color: #000000;">
+    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="SPACE SHOOTER">
+        <font>
+            <Font name="System Bold" size="48.0" />
+        </font>
+    </Text>
+    <TextField fx:id="nameField" maxWidth="200.0" promptText="Enter your name" text="Player"/>
+    <Button mnemonicParsing="false" onAction="#onStartGame" text="Start Game" prefWidth="150" style="-fx-font-size: 18px;"/>
+    <Button mnemonicParsing="false" onAction="#onStartServer" text="Start Server" prefWidth="150" style="-fx-font-size: 18px;"/>
+</VBox>
