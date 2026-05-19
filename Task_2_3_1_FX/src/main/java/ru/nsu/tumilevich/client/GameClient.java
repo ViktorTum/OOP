@@ -215,8 +215,6 @@ public class GameClient extends Application {
         for (SpaceShip ship : gameState.getPlayers().values()) {
             gc.save();
             gc.translate(ship.getPosition().x, ship.getPosition().y);
-            // The sprite source is rotated by 90° relative to the game direction.
-            // Add 90° clockwise only for drawing; bullet direction remains unchanged.
             gc.rotate(ship.getRotation() + Config.SHIP_SPRITE_ROTATION_OFFSET_DEGREES);
             
             if (shipImage != null) {
